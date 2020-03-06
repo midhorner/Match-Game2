@@ -1,4 +1,5 @@
 const CARDS = document.querySelectorAll(".card");
+const MATCH = document.querySelector("#match-text");
 
 var isFlipped = false;
 var boardLock = false;
@@ -7,6 +8,7 @@ var secondCard;
 var matchNumber = 0;
 
 function flipCard() {
+  MATCH.innerHTML = "";
   if (boardLock || this === firstCard) {
     return;
   }
@@ -27,16 +29,23 @@ function flipCard() {
 
 function isMatch() {
   let isMatched = firstCard.className === secondCard.className;
-  isMatched ? cardLock() : unFlip();
+  isMatched ? yesMatch() : noMatch();
 }
 
-function cardLock() {
+function yesMatch() {
+  let demon = secondCard.getElementsByClassName("front")[0].src;
+  // let demonTwo = demon.src;
+  console.log("demon: " + demon);
   matchNumber++;
+  toggleMatchText("#match-text", demon, "MATCH!");
+  setTimeout(() => {toggleMatchText("#match-text","","")}, 2000);
   console.log("number of matches = " + matchNumber);
+  console.log(secondCard);
   firstCard.removeEventListener("click", flipCard);
   secondCard.removeEventListener("click", flipCard);
 
   if (matchNumber === 6) {
+    MATCH.innerHTML = "YOU WIN";
     setTimeout(() => {
       setNewGame();
     }, 1000);
@@ -45,7 +54,7 @@ function cardLock() {
   resetGame();
 }
 
-function unFlip() {
+function noMatch() {
   setTimeout(() => {
     firstCard.classList.remove("flip");
     secondCard.classList.remove("flip");
@@ -64,7 +73,17 @@ function setNewGame() {
   matchNumber = 0;
   CARDS.forEach(card => card.classList.remove("flip"));
   CARDS.forEach(card => card.addEventListener("click", flipCard));
+  MATCH.innerHTML = "";
   shuffle();
+}
+
+function toggleMatchText(id, image, text) {
+  var e = document.querySelector(id);
+  if (e.style.display == "flex") e.style.display = "none";
+
+  else e.style.display = "flex";
+  e.style.backgroundImage = "url(" + image + ")";
+  e.innerHTML = text;
 }
 
 function shuffle() {
